@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+    <html lang="es">
+
+    <head>
+        <!-- basic -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        
+        <!-- mobile metas -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        
+        <!-- site metas -->
+        <title>Contador de guias</title>
+        <meta name="keywords" content="">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        
+        
+        <!-- bootstrap css -->
+        <link rel="stylesheet" href="css/bootstrap.min.css" />
+        
+        <!-- Site css -->
+        <link rel="stylesheet" href="css/style.css" />
+        
+        <!-- responsive css -->
+        <link rel="stylesheet" href="css/responsive.css" />
+        
+        <!-- colors css -->
+        <link rel="stylesheet" href="css/colors1.css" />
+        
+        <!-- custom css -->
+        <link rel="stylesheet" href="css/custom.css" />
+    </head>
+
+    <body id="default_theme" class="contact_us">
+        
+        <!-- header -->
+        <header id="default_header" class="header_style_1">
+            <!-- header bottom -->
+            <div class="header_bottom">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+                            <!-- logo start -->
+                            <div class="logo"> <a href="#"><img src="images/logo.png" alt="logo" /></a> </div>
+                            <!-- logo end -->
+                        </div>
+                        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                            <!-- menu start -->
+                            <div class="menu_side">
+                                <div id="navbar_menu">
+                                    <ul class="first-ul">
+                                        <li><a href="index.html">Genera un numero de guia</a></li>
+                                        <li><a href="contador.html">Contador de numero de guias</a></li>
+                                        
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- menu end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- header bottom end -->
+        </header>
+        <!-- end header -->
+        
+        
+        <div id="msg_error"></div>
+
+
+        <div class="section">
+            <div class="container">
+                <h4 id="currentBalance" style='text-align: right;'>Saldo: $0.00</h4>
+            </div>
+        </div>
+       
+
+        <div class="section padding_layout_1">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12"></div>
+                    <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12">
+                        <div class="row">
+                            <div class="full">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 adress_cont margin_bottom_30">
+                                    <center><h4>Ultima guia generada</h4></center>
+
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <th> <h4>Empresa: </h4> </th>
+                                                <td> <h4 id="carrier"></h4> </td>
+                                            </tr>
+
+                                            <tr>
+                                                <th> <h4>Servicio: </h4> </th>
+                                                <td> <h4 id="service"></h4> </td>
+                                            </tr>
+
+                                            <tr>
+                                                <th> <h4>Numero de rastreo: </h4> </th>
+                                                <td> <h4 id="trackingNumber"></h4> </td>
+                                            </tr>
+
+                                            <tr>
+                                                <th> <h4>Total: </h4> </th>
+                                                <td> <h4 id="totalPrice"></h4> </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td> 
+                                                    <div class="center" id="label"> </div>
+                                                </td>
+
+                                                <td> 
+                                                    <div class="center" id="trackUrl"> </div>
+                                                </td>
+                                            </tr>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 adress_cont margin_bottom_30_all">
+                                    <center><h4>Numero de guias generadas</h4></center>
+                                    <center><h4 id="contador">0 guias</h4></center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- footer -->
+        <footer class="footer_style_2">
+            <div class="container-fuild">
+                <div class="cprt">
+                    <p>Richaud15 © Copyrights 2020</p>
+                </div>
+            </div>
+        </footer>
+        <!-- end footer -->
+        <!-- js section -->
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <!-- menu js -->
+        <script src="js/menumaker.js"></script>
+        
+        <!-- custom js -->
+        <script src="js/custom.js"></script>
+
+        <script>
+            $(document).ready(function(){
+
+                var socket = new WebSocket("ws://127.0.0.1:8888/server.php"); //Se crea un nuevo socket que nos permite escucahr las respuestas del sockect
+                
+                socket.onopen = function(){} //Se abre un nuevo socket
+
+                //Se actulizan los datos cada vez que se recibe una respueta del servidor
+                socket.onmessage = function(msg){
+                    
+                    var json_data = JSON.parse(msg.data); //Se parsea los datos de las respuestas del server
+            
+                    //Verifica cual es la respuesta de la API
+                    //Si hay algun error se muestra un mensaje de error
+                    //Si todo esta bien se muestra los datos generados por la API
+                    if(json_data.status == 'error'){
+                        $('#msg_error').empty()
+
+                        $('#msg_error').append(""+
+                            "<div class='section_error'>"+
+                                "<div class='container'>"+
+                                    "<center><h4> Error: " +json_data.message+ "</h4></center>"+
+                                "</div>"+
+                            "</div>"+
+                        "")
+                                    
+                    }
+                    else{
+                        clear_label()
+
+                        //Se recorre todos los datos del json enviado por la API
+                        $(json_data.data).each(function(key, data){
+                                        
+                            $('#carrier').text(data.carrier)
+                            $('#service').text(data.service)
+                            $('#trackingNumber').text(data.trackingNumber)
+                            $('#totalPrice').text("$"+data.totalPrice+" "+data.currency)
+
+                            $('#currentBalance').text("Saldo: $"+ data.currentBalance+" "+data.currency)
+                                        
+                            $('#label').append("<a class='btn main_bt' href="+ data.label +">Etiqueta</a>")
+                            $('#trackUrl').append("<a class='btn main_bt' href="+ data.trackUrl +">Rastrear</a>")
+                        });
+
+                        $('#contador').text("" + json_data.contador + " guias") //Se imprime el numero de guias generadas
+                    }
+                }
+
+                function clear_label(){
+                    //Se limpian las etiquetas despues de presionar el boton
+                    //esto para evitar que informacion basura se quede en pantalla
+                    $('#label').empty()
+                    $('#trackUrl').empty()
+
+                    $('#msg_error').empty()
+                }
+            });
+        </script>
+    </body>
+</html>
